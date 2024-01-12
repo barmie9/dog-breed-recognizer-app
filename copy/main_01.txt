@@ -1,0 +1,99 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog
+from PIL import Image, ImageTk
+import tensorflow as tf
+import numpy as np
+import ctypes
+
+# def set_menubar_color(color):
+#     # Ustaw kolor paska menu dla systemu Windows
+#     ctypes.windll.shcore.SetProcessDpiAwareness(True)
+#     root.tk_setPalette(background=color)
+class DogBreedDetectorApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Dog Breed Detector")
+
+        # # Dostosuj kolor paska menu
+        # set_menubar_color('blue')
+        #
+        # # Utwórz pasek menu
+        # menu_bar = tk.Menu(root)
+        # root.config(menu=menu_bar)
+
+        self.root.minsize(width=1280, height=720)  # Ustawia minimalny rozmiar okna na 400x300 pikseli
+        self.root.configure(bg='lightgray')  # Ustawia kolor tła okna na jasnoszary
+
+        self.load_model()
+
+        self.image_label = tk.Label(root)
+        self.image_label.pack(pady=10)
+
+        self.load_button = tk.Button(root, text="Wczytaj Zdjęcie", command=self.load_image, bg='blue', fg='white', font=('Arial', 12))
+        self.load_button.pack(pady=10)
+
+        self.detect_button = tk.Button(root, text="Wykryj Rasę", command=self.detect_breed, bg='blue', fg='white', font=('Arial', 12))
+        self.detect_button.pack(pady=10)
+
+        self.result_label = tk.Label(root, text="", bg='lightgray', font=('Arial', 12))
+        self.result_label.pack(pady=10)
+
+    def load_model(self):
+        model_path = "inference_graph_v3/saved_model"
+        self.model = tf.saved_model.load(model_path)
+
+    def load_image(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            self.image = Image.open(file_path)
+            self.display_image()
+
+    def display_image(self):
+        image = self.image.resize((300, 300), Image.LANCZOS)
+        photo = ImageTk.PhotoImage(image)
+        self.image_label.configure(image=photo)
+        self.image_label.image = photo
+
+    def detect_breed(self):
+        if hasattr(self, 'image'):
+            input_tensor = self.preprocess_image()
+            predictions = self.model(input_tensor)
+
+            breed_id = np.argmax(predictions['detection_classes'][0]) + 1
+            breed_name = self.get_breed_name(breed_id)
+            confidence = predictions['detection_scores'][0] * 100
+
+            result_text = f"Rasa: {breed_name}\nPrawdopodobieństwo: {confidence:.2f}%"
+            self.result_label.config(text=result_text)
+
+    def preprocess_image(self):
+        image_array = np.array(self.image)
+        input_tensor = tf.convert_to_tensor([image_array])
+        return input_tensor
+
+    def get_breed_name(self, breed_id):
+        label_map = {
+            1: 'doberman',
+            2: 'germanshepherd',
+            3: 'goldenretriever',
+            4: 'standardschnauzer',
+            5: 'yorkshireterrier',
+            6: 'bernesemountaindog',
+            7: 'chihuahua',
+            8: 'frenchbulldog',
+            9: 'poodle',
+            10: 'siberianhusky',
+            11: 'beagle',
+            12: 'border_collie',
+            13: 'komondor',
+            14: 'Rottweiler',
+            15: 'shih_tzu'
+        }
+        return label_map.get(breed_id, 'Unknown')
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DogBreedDetectorApp(root)
+    root.mainloop()
+

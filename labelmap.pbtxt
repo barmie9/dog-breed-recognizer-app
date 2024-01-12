@@ -1,0 +1,60 @@
+item {
+    id: 1
+    name: 'doberman'
+}
+item {
+    id: 2
+    name: 'germanshepherd'
+}
+item {
+    id: 3
+    name: 'goldenretriever'
+}
+item {
+    id: 4
+    name: 'standardschnauzer'
+}
+item {
+    id: 5
+    name: 'yorkshireterrier'
+}
+item {
+    id: 6
+    name: 'bernesemountaindog'
+}
+item {
+    id: 7
+    name: 'chihuahua'
+}
+item {
+    id: 8
+    name: 'frenchbulldog'
+}
+item {
+    id: 9
+    name: 'poodle'
+}
+item {
+    id: 10
+    name: 'siberianhusky'
+}
+item {
+    id: 11
+    name: 'beagle'
+}
+item {
+    id: 12
+    name: 'border_collie'
+}
+item {
+    id: 13
+    name: 'komondor'
+}
+item {
+    id: 14
+    name: 'Rottweiler'
+}
+item {
+    id: 15
+    name: 'shih_tzu'
+}
